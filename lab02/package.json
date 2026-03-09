@@ -1,8 +1,10 @@
 {
-  "name": "lab01",
+  "name": "lab02",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
+    "migrate": "knex migrate:latest",
+    "migrate:rollback": "knex migrate:rollback",
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

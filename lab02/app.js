@@ -1,7 +1,5 @@
 require('dotenv').config({ path: `${__dirname}/.env`, override: true });
 const express = require('express');
-const pool = require('./db');
-const usersRouter = require('./routes/users');
 const heroesRouter = require('./routes/heroes');
 const incidentsRouter = require('./routes/incidents');
 const { BadRequestError, NotFoundError, ConflictError, ForbiddenError, ValidationError } = require('./services/errors');
@@ -10,7 +8,6 @@ const app = express();
 app.use(express.json());
 
 // Routes 
-app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/heroes', heroesRouter);
 app.use('/api/v1/incidents', incidentsRouter);
 app.use((err, req, res, next) => {
@@ -36,49 +33,4 @@ app.use((err, req, res, next) => {
 // Start
 const PORT = process.env.PORT || 3000;
 
-const start = async () => {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id         SERIAL PRIMARY KEY,
-        name       TEXT NOT NULL,
-        email      TEXT NOT NULL UNIQUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `);
-
-    // Heroes
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS heroes (
-        id         SERIAL PRIMARY KEY,
-        name       TEXT NOT NULL,
-        power      TEXT NOT NULL
-                     CHECK (power IN ('flight','strength','telepathy','speed','invisibility')),
-        status     TEXT NOT NULL DEFAULT 'available'
-                     CHECK (status IN ('available','busy')),
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `);
-
-    // Incidents
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS incidents (
-        id         SERIAL PRIMARY KEY,
-        location   TEXT NOT NULL,
-        level      TEXT NOT NULL
-                     CHECK (level IN ('low','medium','critical')),
-        status     TEXT NOT NULL DEFAULT 'open'
-                     CHECK (status IN ('open','assigned','resolved')),
-        hero_id    INTEGER REFERENCES heroes(id),
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `);
-
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  } catch (err) {
-    console.error('Startup error:', err.message);
-    process.exit(1);
-  }
-};
-
-start();
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

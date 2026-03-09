@@ -23,7 +23,13 @@ DATABASE_URL=postgresql://postgres:haslo@localhost:5432/superheroes
 PORT=3000
 ```
 
-3. Uruchom aplikacje:
+3. Wykonaj migracje bazy:
+
+```bash
+npm run migrate
+```
+
+4. Uruchom aplikacje:
 
 ```bash
 npm start
