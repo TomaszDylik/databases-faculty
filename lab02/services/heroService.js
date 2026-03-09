@@ -2,7 +2,7 @@ const heroRepository = require('../repositories/heroRepository');
 const { BadRequestError, ValidationError } = require('./errors');
 
 const VALID_POWERS = ['flight', 'strength', 'telepathy', 'speed', 'invisibility'];
-const VALID_STATUSES = ['available', 'busy'];
+const VALID_STATUSES = ['available', 'busy', 'retired'];
 
 //Returns heroes, optionally filtered by status and/or power.
 

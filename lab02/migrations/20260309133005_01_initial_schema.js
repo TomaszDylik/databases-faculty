@@ -9,7 +9,7 @@ exports.up = async function(knex) {
       table.increments('id').primary();
       table.string('name').notNullable();
       table.enum('power', ['flight', 'strength', 'telepathy', 'speed', 'invisibility']).notNullable();
-      table.enum('status', ['available', 'busy']).notNullable().defaultTo('available');
+      table.enum('status', ['available', 'busy', 'retired']).notNullable().defaultTo('available');
       table.timestamps(true, true);
     });
   }
