@@ -29,7 +29,13 @@ PORT=3000
 npm run migrate
 ```
 
-4. Uruchom aplikacje:
+4. Wypelnij baze danymi deweloperskimi:
+
+```bash
+npm run seed
+```
+
+5. Uruchom aplikacje:
 
 ```bash
 npm start

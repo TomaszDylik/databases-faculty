@@ -82,13 +82,31 @@
 					]
 				},
 				{
-					"name": "Aktualizuj bohatera (PATCH)",
+					"name": "Aktualizuj bohatera (PATCH, bez blokowania assign)",
 					"request": {
 						"method": "PATCH",
 						"header": [{ "key": "Content-Type", "value": "application/json" }],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"status\": \"busy\",\n  \"missions_count\": 3\n}"
+							"raw": "{\n  \"missions_count\": 3\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/heroes/{{heroId}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "heroes", "{{heroId}}"]
+						}
+					}
+				},
+				{
+					"name": "Ustaw bohatera jako available (gdy assign sie wywali)",
+					"request": {
+						"method": "PATCH",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"available\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/api/v1/heroes/{{heroId}}",

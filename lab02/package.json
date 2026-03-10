@@ -5,6 +5,8 @@
   "scripts": {
     "migrate": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
+    "seed": "knex seed:run",
+    "seed:test": "knex seed:run --env test",
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
