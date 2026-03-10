@@ -88,11 +88,21 @@ async function assignHero(trx, incidentId, heroId) {
 }
 
 async function resolve(trx, incidentId) {
+  const incident = await findByIdForUpdate(trx, incidentId);
+  let resolutionMinutes = null;
+
+  if (incident?.assigned_at) {
+    const assignedAt = new Date(incident.assigned_at).getTime();
+    const resolvedAt = Date.now();
+    resolutionMinutes = Number(((resolvedAt - assignedAt) / 60000).toFixed(2));
+  }
+
   const [updatedIncident] = await trx('incidents')
     .where('id', incidentId)
     .update({
       status: 'resolved',
       resolved_at: trx.fn.now(),
+      resolution_minutes: resolutionMinutes,
       updated_at: trx.fn.now(),
     })
     .returning('*');
@@ -120,12 +130,14 @@ async function countByLevel() {
     .orderBy('level', 'asc');
 }
 
-async function findResolvedDurations() {
-  return knex('incidents')
-    .select('assigned_at', 'resolved_at')
+async function getAverageResolutionMinutes() {
+  const result = await knex('incidents')
     .where('status', 'resolved')
-    .whereNotNull('assigned_at')
-    .whereNotNull('resolved_at');
+    .whereNotNull('resolution_minutes')
+    .avg('resolution_minutes as averageResolutionMinutes')
+    .first();
+
+  return result?.averageResolutionMinutes ? Number(result.averageResolutionMinutes) : 0;
 }
 
 module.exports = {
@@ -139,5 +151,5 @@ module.exports = {
   countAll,
   countByStatus,
   countByLevel,
-  findResolvedDurations,
+  getAverageResolutionMinutes,
 };

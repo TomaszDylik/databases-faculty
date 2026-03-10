@@ -8,20 +8,6 @@ function mapGroupedCounts(rows, keyField) {
   }, {});
 }
 
-function calculateAverageResolutionMinutes(rows) {
-  if (rows.length === 0) {
-    return 0;
-  }
-
-  const totalMinutes = rows.reduce((sum, row) => {
-    const assignedAt = new Date(row.assigned_at).getTime();
-    const resolvedAt = new Date(row.resolved_at).getTime();
-    return sum + (resolvedAt - assignedAt) / 60000;
-  }, 0);
-
-  return Number((totalMinutes / rows.length).toFixed(2));
-}
-
 async function getStats() {
   const [
     heroTotal,
@@ -30,7 +16,7 @@ async function getStats() {
     incidentTotal,
     incidentStatusCounts,
     incidentLevelCounts,
-    resolvedDurations,
+    averageResolutionMinutes,
   ] = await Promise.all([
     heroRepository.countAll(),
     heroRepository.countByStatus(),
@@ -38,7 +24,7 @@ async function getStats() {
     incidentRepository.countAll(),
     incidentRepository.countByStatus(),
     incidentRepository.countByLevel(),
-    incidentRepository.findResolvedDurations(),
+    incidentRepository.getAverageResolutionMinutes(),
   ]);
 
   return {
@@ -51,7 +37,7 @@ async function getStats() {
       total: incidentTotal,
       byStatus: mapGroupedCounts(incidentStatusCounts, 'status'),
       byLevel: mapGroupedCounts(incidentLevelCounts, 'level'),
-      averageResolutionMinutes: calculateAverageResolutionMinutes(resolvedDurations),
+      averageResolutionMinutes,
     },
   };
 }
