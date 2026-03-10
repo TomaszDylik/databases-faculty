@@ -38,6 +38,20 @@
 					}
 				},
 				{
+					"name": "Pobierz bohatera po ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/heroes/{{heroId}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "heroes", "{{heroId}}"]
+						}
+					}
+				},
+				{
 					"name": "Dodaj bohatera",
 					"request": {
 						"method": "POST",
@@ -66,6 +80,42 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "Aktualizuj bohatera (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"busy\",\n  \"missions_count\": 3\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/heroes/{{heroId}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "heroes", "{{heroId}}"]
+						}
+					}
+				},
+				{
+					"name": "Historia incydentów bohatera",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/heroes/{{heroId}}/incidents?page=1&pageSize=5",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "heroes", "{{heroId}}", "incidents"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "5" }
+							]
+						}
+					}
 				}
 			]
 		},
@@ -87,6 +137,20 @@
 								{ "key": "page", "value": "1" },
 								{ "key": "pageSize", "value": "10" }
 							]
+						}
+					}
+				},
+				{
+					"name": "Pobierz incydent po ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/incidents/{{incidentId}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "incidents", "{{incidentId}}"]
 						}
 					}
 				},
@@ -119,6 +183,20 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "Statystyki systemu",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/stats",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "stats"]
+						}
+					}
 				},
 				{
 					"name": "Przydziel bohatera (Assign)",
