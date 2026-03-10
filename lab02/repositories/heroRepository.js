@@ -1,53 +1,63 @@
-const pool = require('../db');
+const knex = require('../db/knex');
 
-async function findAll({ status, power } = {}) {
-  const conditions = [];
-  const values = [];
+async function findAll({ status, power, sortBy = 'created_at', sortDir = 'desc', page = 1, pageSize = 10 } = {}) {
+  const limit = Math.min(parseInt(pageSize, 10), 50);
+  const currentPage = Math.max(parseInt(page, 10), 1);
+  const offset = (currentPage - 1) * limit;
+
+  const query = knex('heroes');
 
   if (status) {
-    values.push(status);
-    conditions.push(`status = $${values.length}`);
+    query.where('status', status);
   }
   if (power) {
-    values.push(power);
-    conditions.push(`power = $${values.length}`);
+    query.where('power', power);
   }
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-  const { rows } = await pool.query(
-    `SELECT * FROM heroes ${where} ORDER BY created_at DESC`,
-    values
-  );
-  return rows;
+  // 1. Tworzymy zapytanie do pobrania danych z paginacją i sortowaniem
+  const countQuery = query.clone().count('* as total').first();
+
+  // 2. Dodajemy sortowanie i paginację do głównego zapytania
+  query.orderBy(sortBy, sortDir).limit(limit).offset(offset);
+
+  // 3. Wykonujemy oba zapytania równocześnie
+  const [countResult, data] = await Promise.all([countQuery, query]);
+  
+  // 4. Obliczamy total i totalPages na podstawie wyniku countQuery
+  const total = parseInt(countResult.total, 10);
+  const totalPages = Math.ceil(total / limit);
+
+  // 5. Zwracamy dane wraz z informacjami o paginacji
+  return {
+    data,
+    pagination: {
+      page: currentPage,
+      pageSize: limit,
+      total,
+      totalPages
+    }
+  };
 }
 
 async function findById(id) {
-  const { rows } = await pool.query('SELECT * FROM heroes WHERE id = $1', [id]);
-  return rows[0] ?? null;
+  return await knex('heroes').where('id', id).first() ?? null;
 }
 
-async function findByIdForUpdate(client, id) {
-  const { rows } = await client.query(
-    'SELECT * FROM heroes WHERE id = $1 FOR UPDATE',
-    [id]
-  );
-  return rows[0] ?? null;
+async function findByIdForUpdate(trx, id) {
+  return await trx('heroes').where('id', id).first().forUpdate() ?? null;
 }
 
 async function create({ name, power }) {
-  const { rows } = await pool.query(
-    'INSERT INTO heroes (name, power) VALUES ($1, $2) RETURNING *',
-    [name, power]
-  );
-  return rows[0];
+  const [newHero] = await knex('heroes').insert({ name, power }).returning('*');
+  return newHero;
 }
 
-async function updateStatus(client, id, status) {
-  const { rows } = await client.query(
-    'UPDATE heroes SET status = $1 WHERE id = $2 RETURNING *',
-    [status, id]
-  );
-  return rows[0];
+async function updateStatus(trx, id, status) {
+  const [updatedHero] = await trx('heroes')
+    .where('id', id)
+    .update({ status })
+    .returning('*');
+  return updatedHero;
 }
 
 module.exports = { findAll, findById, findByIdForUpdate, create, updateStatus };

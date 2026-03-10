@@ -1,61 +1,75 @@
-const pool = require('../db');
+const knex = require('../db/knex');
 
-async function findAll({ level, status } = {}) {
-  const conditions = [];
-  const values = [];
+async function findAll({ level, status, district, page = 1, pageSize = 10 } = {}) {
+  const limit = Math.min(parseInt(pageSize, 10), 50);
+  const currentPage = Math.max(parseInt(page, 10), 1);
+  const offset = (currentPage - 1) * limit;
+
+  const query = knex('incidents');
 
   if (level) {
-    values.push(level);
-    conditions.push(`level = $${values.length}`);
+    query.where('level', level);
   }
   if (status) {
-    values.push(status);
-    conditions.push(`status = $${values.length}`);
+    query.where('status', status);
+  }
+  if (district) {
+    query.where('district', 'ILIKE', `%${district}%`);
   }
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-  const { rows } = await pool.query(
-    `SELECT * FROM incidents ${where} ORDER BY created_at DESC`,
-    values
-  );
-  return rows;
+  const countQuery = query.clone().count('* as total').first();
+
+  query.orderBy('created_at', 'desc').limit(limit).offset(offset);
+
+  const [countResult, data] = await Promise.all([countQuery, query]);
+  const total = parseInt(countResult.total, 10);
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    data,
+    pagination: {
+      page: currentPage,
+      pageSize: limit,
+      total,
+      totalPages,
+    },
+  };
 }
 
 async function findById(id) {
-  const { rows } = await pool.query('SELECT * FROM incidents WHERE id = $1', [id]);
-  return rows[0] ?? null;
+  return await knex('incidents').where('id', id).first() ?? null;
 }
 
-async function findByIdForUpdate(client, id) {
-  const { rows } = await client.query(
-    'SELECT * FROM incidents WHERE id = $1 FOR UPDATE',
-    [id]
-  );
-  return rows[0] ?? null;
+async function findByIdForUpdate(trx, id) {
+  return await trx('incidents').where('id', id).first().forUpdate() ?? null;
 }
 
 async function create({ location, level }) {
-  const { rows } = await pool.query(
-    'INSERT INTO incidents (location, level) VALUES ($1, $2) RETURNING *',
-    [location, level]
-  );
-  return rows[0];
+  const [newIncident] = await knex('incidents').insert({ location, level }).returning('*');
+  return newIncident;
 }
 
-async function assignHero(client, incidentId, heroId) {
-  const { rows } = await client.query(
-    'UPDATE incidents SET status = $1, hero_id = $2 WHERE id = $3 RETURNING *',
-    ['assigned', heroId, incidentId]
-  );
-  return rows[0];
+async function assignHero(trx, incidentId, heroId) {
+  const [updatedIncident] = await trx('incidents')
+    .where('id', incidentId)
+    .update({
+      status: 'assigned',
+      hero_id: heroId,
+      assigned_at: trx.fn.now(),
+    })
+    .returning('*');
+  return updatedIncident;
 }
 
-async function resolve(client, incidentId) {
-  const { rows } = await client.query(
-    'UPDATE incidents SET status = $1 WHERE id = $2 RETURNING *',
-    ['resolved', incidentId]
-  );
-  return rows[0];
+async function resolve(trx, incidentId) {
+  const [updatedIncident] = await trx('incidents')
+    .where('id', incidentId)
+    .update({
+      status: 'resolved',
+      resolved_at: trx.fn.now(),
+    })
+    .returning('*');
+  return updatedIncident;
 }
 
 module.exports = { findAll, findById, findByIdForUpdate, create, assignHero, resolve };
