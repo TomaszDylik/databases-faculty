@@ -6,6 +6,18 @@ const { BadRequestError, ValidationError, NotFoundError, ConflictError, Forbidde
 const VALID_LEVELS = ['low', 'medium', 'critical'];
 const VALID_STATUSES = ['open', 'assigned', 'resolved'];
 
+function validateIncidentId(incidentId) {
+  if (!Number.isInteger(incidentId) || incidentId < 1) {
+    throw new ValidationError('Incident id must be a positive integer');
+  }
+}
+
+function validateHeroId(heroId) {
+  if (!Number.isInteger(heroId) || heroId < 1) {
+    throw new ValidationError('Hero id must be a positive integer');
+  }
+}
+
 //Powers that qualify a hero for a CRITICAL-level incident.
 
 const CRITICAL_REQUIRED_POWERS = ['flight', 'strength'];
@@ -28,6 +40,15 @@ async function listIncidents({ level, status, district, page, pageSize } = {}) {
   return incidentRepository.findAll({ level, status, district, page, pageSize });
 }
 
+async function getIncidentById(incidentId) {
+  validateIncidentId(incidentId);
+  const incident = await incidentRepository.findById(incidentId);
+  if (!incident) {
+    throw new NotFoundError(`Incident with id ${incidentId} not found`);
+  }
+  return incident;
+}
+
 //Reports a new incident.
 
 async function createIncident({ location, level }) {
@@ -43,9 +64,12 @@ async function createIncident({ location, level }) {
 //Assigns a hero to an open incident.
 
 async function assignHero(incidentId, heroId) {
+  validateIncidentId(incidentId);
+
   if (heroId === undefined || heroId === null) {
     throw new BadRequestError('Field "heroId" is required');
   }
+  validateHeroId(heroId);
 
   return knex.transaction(async (trx) => {
     const incident = await incidentRepository.findByIdForUpdate(trx, incidentId);
@@ -79,6 +103,8 @@ async function assignHero(incidentId, heroId) {
 //Resolves an assigned incident and releases its hero back to the pool.
 
 async function resolveIncident(incidentId) {
+  validateIncidentId(incidentId);
+
   return knex.transaction(async (trx) => {
     const incident = await incidentRepository.findByIdForUpdate(trx, incidentId);
     if (!incident) {
@@ -101,4 +127,4 @@ async function resolveIncident(incidentId) {
   });
 }
 
-module.exports = { listIncidents, createIncident, assignHero, resolveIncident };
+module.exports = { listIncidents, getIncidentById, createIncident, assignHero, resolveIncident };

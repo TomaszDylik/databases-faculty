@@ -12,6 +12,16 @@ async function listIncidents(req, res, next) {
   }
 }
 
+async function getIncidentById(req, res, next) {
+  try {
+    const incidentId = Number(req.params.id);
+    const incident = await incidentService.getIncidentById(incidentId);
+    res.status(200).json(incident);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function createIncident(req, res, next) {
   try {
     const { location, level } = req.body;
@@ -44,4 +54,4 @@ async function resolveIncident(req, res, next) {
   }
 }
 
-module.exports = { listIncidents, createIncident, assignHero, resolveIncident };
+module.exports = { listIncidents, getIncidentById, createIncident, assignHero, resolveIncident };

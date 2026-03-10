@@ -12,6 +12,16 @@ async function listHeroes(req, res, next) {
   }
 }
 
+async function getHeroById(req, res, next) {
+  try {
+    const heroId = Number(req.params.id);
+    const hero = await heroService.getHeroById(heroId);
+    res.status(200).json(hero);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function createHero(req, res, next) {
   try {
     const { name, power } = req.body;
@@ -23,4 +33,26 @@ async function createHero(req, res, next) {
   }
 }
 
-module.exports = { listHeroes, createHero };
+async function updateHero(req, res, next) {
+  try {
+    const heroId = Number(req.params.id);
+    const hero = await heroService.updateHero(heroId, req.body);
+    res.status(200).json(hero);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function listHeroIncidents(req, res, next) {
+  try {
+    const heroId = Number(req.params.id);
+    const page = req.query.page ? parseInt(req.query.page, 10) : undefined;
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize, 10) : undefined;
+    const incidents = await heroService.listHeroIncidents(heroId, { page, pageSize });
+    res.status(200).json(incidents);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { listHeroes, getHeroById, createHero, updateHero, listHeroIncidents };

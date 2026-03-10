@@ -2,6 +2,7 @@ require('dotenv').config({ path: `${__dirname}/.env`, override: true });
 const express = require('express');
 const heroesRouter = require('./routes/heroes');
 const incidentsRouter = require('./routes/incidents');
+const statsRouter = require('./routes/stats');
 const { BadRequestError, NotFoundError, ConflictError, ForbiddenError, ValidationError } = require('./services/errors');
 
 const app = express();
@@ -10,6 +11,7 @@ app.use(express.json());
 // Routes 
 app.use('/api/v1/heroes', heroesRouter);
 app.use('/api/v1/incidents', incidentsRouter);
+app.use('/api/v1/stats', statsRouter);
 app.use((err, req, res, next) => {
   /** @param {number} status @param {string} title @param {string} detail */
   const problem = (status, title, detail) =>

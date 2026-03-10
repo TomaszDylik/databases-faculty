@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const {
   listIncidents,
+  getIncidentById,
   createIncident,
   assignHero,
   resolveIncident,
@@ -9,6 +10,7 @@ const {
 const router = Router();
 
 router.get('/', listIncidents);
+router.get('/:id', getIncidentById);
 router.post('/', createIncident);
 router.post('/:id/assign', assignHero);
 router.patch('/:id/resolve', resolveIncident);

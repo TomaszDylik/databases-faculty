@@ -52,12 +52,47 @@ async function create({ name, power }) {
   return newHero;
 }
 
+async function update(id, updates) {
+  const [updatedHero] = await knex('heroes')
+    .where('id', id)
+    .update({
+      ...updates,
+      updated_at: knex.fn.now(),
+    })
+    .returning('*');
+  return updatedHero ?? null;
+}
+
 async function updateStatus(trx, id, status) {
   const [updatedHero] = await trx('heroes')
     .where('id', id)
-    .update({ status })
+    .update({
+      status,
+      updated_at: trx.fn.now(),
+    })
     .returning('*');
   return updatedHero;
 }
 
-module.exports = { findAll, findById, findByIdForUpdate, create, updateStatus };
+async function countAll() {
+  const result = await knex('heroes').count('* as total').first();
+  return parseInt(result.total, 10);
+}
+
+async function countByStatus() {
+  return knex('heroes')
+    .select('status')
+    .count('* as count')
+    .groupBy('status')
+    .orderBy('status', 'asc');
+}
+
+async function countByPower() {
+  return knex('heroes')
+    .select('power')
+    .count('* as count')
+    .groupBy('power')
+    .orderBy('power', 'asc');
+}
+
+module.exports = { findAll, findById, findByIdForUpdate, create, update, updateStatus, countAll, countByStatus, countByPower };
