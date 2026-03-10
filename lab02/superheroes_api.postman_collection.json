@@ -1,0 +1,158 @@
+{
+	"info": {
+		"name": "Superheroes API - Lab 02",
+		"description": "Kolekcja endpointów do zarządzania superbohaterami i incydentami (Knex.js).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "heroId",
+			"value": ""
+		},
+		{
+			"key": "incidentId",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "1. Bohaterowie (Heroes)",
+			"item": [
+				{
+					"name": "Pobierz listę bohaterów (z paginacją i filtrami)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/heroes?page=1&pageSize=5&status=available",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "heroes"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "5" },
+								{ "key": "status", "value": "available" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Dodaj bohatera",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Kapitan Strength {{$timestamp}}\",\n  \"power\": \"strength\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/heroes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "heroes"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const response = pm.response.json();",
+									"pm.collectionVariables.set('heroId', response.id);"
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "2. Incydenty (Incidents)",
+			"item": [
+				{
+					"name": "Pobierz listę incydentów",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/incidents?page=1&pageSize=10",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "incidents"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "pageSize", "value": "10" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Zgłoś nowy incydent",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"location\": \"Uniwersytet\",\n  \"level\": \"critical\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/incidents",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "incidents"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const response = pm.response.json();",
+									"pm.collectionVariables.set('incidentId', response.id);"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Przydziel bohatera (Assign)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"heroId\": {{heroId}}\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/incidents/{{incidentId}}/assign",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "incidents", "{{incidentId}}", "assign"]
+						}
+					}
+				},
+				{
+					"name": "Zamknij incydent (Resolve)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/incidents/{{incidentId}}/resolve",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3000",
+							"path": ["api", "v1", "incidents", "{{incidentId}}", "resolve"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
