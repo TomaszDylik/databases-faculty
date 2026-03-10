@@ -1,4 +1,4 @@
-const pool = require('../db');
+const knex = require('../db/knex');
 const incidentRepository = require('../repositories/incidentRepository');
 const heroRepository = require('../repositories/heroRepository');
 const { BadRequestError, ValidationError, NotFoundError, ConflictError, ForbiddenError } = require('./errors');
@@ -12,14 +12,20 @@ const CRITICAL_REQUIRED_POWERS = ['flight', 'strength'];
 
 //Returns incidents, optionally filtered by level and/or status.
 
-async function listIncidents({ level, status } = {}) {
+async function listIncidents({ level, status, district, page, pageSize } = {}) {
   if (level && !VALID_LEVELS.includes(level)) {
     throw new ValidationError(`Invalid level value "${level}". Allowed: ${VALID_LEVELS.join(', ')}`);
   }
   if (status && !VALID_STATUSES.includes(status)) {
     throw new ValidationError(`Invalid status value "${status}". Allowed: ${VALID_STATUSES.join(', ')}`);
   }
-  return incidentRepository.findAll({ level, status });
+  if (page !== undefined && (!Number.isInteger(page) || page < 1)) {
+    throw new ValidationError('Query parameter "page" must be a positive integer');
+  }
+  if (pageSize !== undefined && (!Number.isInteger(pageSize) || pageSize < 1 || pageSize > 50)) {
+    throw new ValidationError('Query parameter "pageSize" must be an integer between 1 and 50');
+  }
+  return incidentRepository.findAll({ level, status, district, page, pageSize });
 }
 
 //Reports a new incident.
@@ -41,11 +47,8 @@ async function assignHero(incidentId, heroId) {
     throw new BadRequestError('Field "heroId" is required');
   }
 
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-
-    const incident = await incidentRepository.findByIdForUpdate(client, incidentId);
+  return knex.transaction(async (trx) => {
+    const incident = await incidentRepository.findByIdForUpdate(trx, incidentId);
     if (!incident) {
       throw new NotFoundError(`Incident with id ${incidentId} not found`);
     }
@@ -53,7 +56,7 @@ async function assignHero(incidentId, heroId) {
       throw new ConflictError(`Incident is already ${incident.status}`);
     }
 
-    const hero = await heroRepository.findByIdForUpdate(client, heroId);
+    const hero = await heroRepository.findByIdForUpdate(trx, heroId);
     if (!hero) {
       throw new NotFoundError(`Hero with id ${heroId} not found`);
     }
@@ -67,27 +70,17 @@ async function assignHero(incidentId, heroId) {
       );
     }
 
-    const updated = await incidentRepository.assignHero(client, incidentId, heroId);
-    await heroRepository.updateStatus(client, heroId, 'busy');
-
-    await client.query('COMMIT');
+    const updated = await incidentRepository.assignHero(trx, incidentId, heroId);
+    await heroRepository.updateStatus(trx, heroId, 'busy');
     return updated;
-  } catch (err) {
-    await client.query('ROLLBACK');
-    throw err;
-  } finally {
-    client.release();
-  }
+  });
 }
 
 //Resolves an assigned incident and releases its hero back to the pool.
 
 async function resolveIncident(incidentId) {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-
-    const incident = await incidentRepository.findByIdForUpdate(client, incidentId);
+  return knex.transaction(async (trx) => {
+    const incident = await incidentRepository.findByIdForUpdate(trx, incidentId);
     if (!incident) {
       throw new NotFoundError(`Incident with id ${incidentId} not found`);
     }
@@ -98,20 +91,14 @@ async function resolveIncident(incidentId) {
       throw new ConflictError('Only assigned incidents can be resolved');
     }
 
-    const resolved = await incidentRepository.resolve(client, incidentId);
+    const resolved = await incidentRepository.resolve(trx, incidentId);
 
     if (incident.hero_id) {
-      await heroRepository.updateStatus(client, incident.hero_id, 'available');
+      await heroRepository.updateStatus(trx, incident.hero_id, 'available');
     }
 
-    await client.query('COMMIT');
     return resolved;
-  } catch (err) {
-    await client.query('ROLLBACK');
-    throw err;
-  } finally {
-    client.release();
-  }
+  });
 }
 
 module.exports = { listIncidents, createIncident, assignHero, resolveIncident };

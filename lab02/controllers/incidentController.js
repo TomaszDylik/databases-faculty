@@ -2,8 +2,10 @@ const incidentService = require('../services/incidentService');
 
 async function listIncidents(req, res, next) {
   try {
-    const { level, status } = req.query;
-    const incidents = await incidentService.listIncidents({ level, status });
+    const { level, status, district } = req.query;
+    const page = req.query.page ? parseInt(req.query.page, 10) : undefined;
+    const pageSize = req.query.pageSize ? parseInt(req.query.pageSize, 10) : undefined;
+    const incidents = await incidentService.listIncidents({ level, status, district, page, pageSize });
     res.status(200).json(incidents);
   } catch (err) {
     next(err);
