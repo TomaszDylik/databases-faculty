@@ -1,5 +1,11 @@
 const { faker } = require('@faker-js/faker');
 
+const BASE_ASSIGNED_AT = new Date('2026-01-01T08:00:00.000Z');
+
+function offsetDate(baseDate, minutesToAdd) {
+  return new Date(baseDate.getTime() + minutesToAdd * 60000);
+}
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> } 
@@ -25,6 +31,7 @@ exports.seed = async function(knex) {
     let hero_id = null;
     let assigned_at = null;
     let resolved_at = null;
+    let resolution_minutes = null;
 
     if (status !== 'open') {
       const candidateHeroIds = level === 'critical'
@@ -37,7 +44,7 @@ exports.seed = async function(knex) {
         status = 'open';
       } else {
         hero_id = faker.helpers.arrayElement(candidateHeroIds);
-        assigned_at = faker.date.recent();
+        assigned_at = offsetDate(BASE_ASSIGNED_AT, i * 17 + 5);
 
         if (status === 'assigned') {
           availableHeroIds.delete(hero_id);
@@ -45,7 +52,8 @@ exports.seed = async function(knex) {
         }
 
         if (status === 'resolved') {
-          resolved_at = faker.date.between({ from: assigned_at, to: new Date() });
+          resolved_at = offsetDate(assigned_at, (i % 9 + 1) * 13);
+          resolution_minutes = Number(((resolved_at.getTime() - assigned_at.getTime()) / 60000).toFixed(2));
         }
       }
     }
@@ -57,7 +65,8 @@ exports.seed = async function(knex) {
       status,
       hero_id,
       assigned_at,
-      resolved_at
+      resolved_at,
+      resolution_minutes,
     });
   }
 
@@ -66,6 +75,9 @@ exports.seed = async function(knex) {
   if (busyHeroIds.size > 0) {
     await knex('heroes')
       .whereIn('id', Array.from(busyHeroIds))
-      .update({ status: 'busy' });
+      .update({
+        status: 'busy',
+        updated_at: knex.fn.now(),
+      });
   }
 };
