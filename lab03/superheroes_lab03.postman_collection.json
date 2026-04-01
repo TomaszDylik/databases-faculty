@@ -1,0 +1,62 @@
+{
+  "info": {
+    "name": "Lab03 — Superheroes API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base", "value": "http://localhost:3000/api/v1" }
+  ],
+  "item": [
+    {
+      "name": "GET /heroes",
+      "request": { "method": "GET", "url": "{{base}}/heroes" }
+    },
+    {
+      "name": "GET /heroes/:id",
+      "request": { "method": "GET", "url": "{{base}}/heroes/1" }
+    },
+    {
+      "name": "POST /heroes",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test Hero\",\n  \"power\": \"flight\"\n}" },
+        "url": "{{base}}/heroes"
+      }
+    },
+    {
+      "name": "GET /incidents",
+      "request": { "method": "GET", "url": "{{base}}/incidents" }
+    },
+    {
+      "name": "GET /incidents/:id",
+      "request": { "method": "GET", "url": "{{base}}/incidents/1" }
+    },
+    {
+      "name": "POST /incidents",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"location\": \"Central Park\",\n  \"level\": \"medium\"\n}" },
+        "url": "{{base}}/incidents"
+      }
+    },
+    {
+      "name": "POST /incidents/:id/assign",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"heroId\": 1\n}" },
+        "url": "{{base}}/incidents/1/assign"
+      }
+    },
+    {
+      "name": "PATCH /incidents/:id/resolve",
+      "request": { "method": "PATCH", "url": "{{base}}/incidents/1/resolve" }
+    },
+    {
+      "name": "GET /stats",
+      "request": { "method": "GET", "url": "{{base}}/stats" }
+    }
+  ]
+}
