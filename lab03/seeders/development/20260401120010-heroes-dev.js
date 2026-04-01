@@ -1,0 +1,31 @@
+'use strict';
+
+const { faker } = require('@faker-js/faker');
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface) {
+    faker.seed(7);
+
+    const powers   = ['flight', 'strength', 'telepathy', 'speed', 'invisibility'];
+    const now      = new Date();
+    const heroes   = [];
+
+    for (let i = 0; i < 20; i++) {
+      heroes.push({
+        name:           faker.person.fullName() + ' ' + faker.string.alphanumeric(4),
+        power:          faker.helpers.arrayElement(powers),
+        status:         'available',
+        missions_count: faker.number.int({ min: 0, max: 50 }),
+        created_at:     now,
+        updated_at:     now,
+      });
+    }
+
+    await queryInterface.bulkInsert('heroes', heroes);
+  },
+
+  async down(queryInterface) {
+    await queryInterface.bulkDelete('heroes', null, { truncate: true, cascade: true, restartIdentity: true });
+  },
+};
