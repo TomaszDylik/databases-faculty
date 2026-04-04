@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "Lab04 — Prisma ORM",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /heroes",
+      "request": { "method": "GET", "url": "http://localhost:3000/heroes" }
+    },
+    {
+      "name": "GET /heroes?status=available",
+      "request": { "method": "GET", "url": "http://localhost:3000/heroes?status=available" }
+    },
+    {
+      "name": "POST /heroes",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/heroes",
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"TestHero\",\n  \"power\": \"flight\"\n}" }
+      }
+    },
+    {
+      "name": "GET /heroes/1",
+      "request": { "method": "GET", "url": "http://localhost:3000/heroes/1" }
+    },
+    {
+      "name": "PATCH /heroes/1",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/heroes/1",
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"unavailable\"\n}" }
+      }
+    },
+    {
+      "name": "DELETE /heroes/1",
+      "request": { "method": "DELETE", "url": "http://localhost:3000/heroes/1" }
+    },
+    {
+      "name": "GET /incidents",
+      "request": { "method": "GET", "url": "http://localhost:3000/incidents" }
+    },
+    {
+      "name": "GET /incidents?categoryId=1",
+      "request": { "method": "GET", "url": "http://localhost:3000/incidents?categoryId=1" }
+    },
+    {
+      "name": "GET /incidents?exclude=2",
+      "request": { "method": "GET", "url": "http://localhost:3000/incidents?exclude=2" }
+    },
+    {
+      "name": "POST /incidents (z categoryIds)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/incidents",
+        "body": { "mode": "raw", "raw": "{\n  \"location\": \"Park Avenue\",\n  \"level\": \"medium\",\n  \"categoryIds\": [1, 2]\n}" }
+      }
+    },
+    {
+      "name": "PATCH /incidents/1/assign",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/incidents/1/assign",
+        "body": { "mode": "raw", "raw": "{\n  \"heroId\": 2\n}" }
+      }
+    },
+    {
+      "name": "PATCH /incidents/1/resolve",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "http://localhost:3000/incidents/1/resolve",
+        "body": { "mode": "raw", "raw": "{\n  \"resolutionMinutes\": 45\n}" }
+      }
+    },
+    {
+      "name": "GET /stats",
+      "request": { "method": "GET", "url": "http://localhost:3000/stats" }
+    },
+    {
+      "name": "GET /categories",
+      "request": { "method": "GET", "url": "http://localhost:3000/categories" }
+    }
+  ]
+}
