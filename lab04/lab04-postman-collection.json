@@ -5,10 +5,10 @@
   },
   "variable": [
     { "key": "baseUrl",           "value": "http://localhost:3000/api/v1" },
-    { "key": "heroId",            "value": "21",  "description": "ID bohatera (sprawdź GET /heroes)" },
-    { "key": "availableHeroId",   "value": "22",  "description": "ID bohatera ze statusem available" },
-    { "key": "openIncidentId",    "value": "62",  "description": "ID incydentu ze statusem open" },
-    { "key": "assignedIncidentId","value": "63",  "description": "ID incydentu ze statusem assigned" }
+    { "key": "heroId",            "value": "107",  "description": "ID bohatera (sprawdź GET /heroes)" },
+    { "key": "availableHeroId",   "value": "91",   "description": "ID bohatera ze statusem available" },
+    { "key": "openIncidentId",    "value": "249",  "description": "ID incydentu ze statusem open" },
+    { "key": "assignedIncidentId","value": "250",  "description": "ID incydentu ze statusem assigned" }
   ],
   "item": [
     {
