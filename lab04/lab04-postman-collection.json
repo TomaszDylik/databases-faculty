@@ -1,20 +1,105 @@
 {
   "info": {
-    "name": "Lab04 — Prisma ORM (kryteria)",
+    "name": "Lab04",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl",           "value": "http://localhost:3000/api/v1" },
-    { "key": "heroId",            "value": "179",  "description": "available hero (strength)" },
-    { "key": "openIncidentId",    "value": "518",  "description": "open incident (medium)" },
-    { "key": "assignedIncidentId","value": "519",  "description": "assigned incident (low)" },
-    { "key": "categoryId",        "value": "41",   "description": "flood" },
-    { "key": "excludeCategoryId", "value": "42",   "description": "fire" }
+    { "key": "heroId",            "value": "179" },
+    { "key": "openIncidentId",    "value": "518" },
+    { "key": "assignedIncidentId","value": "519" },
+    { "key": "categoryId",        "value": "41" },
+    { "key": "excludeCategoryId", "value": "42" }
   ],
   "item": [
     {
-      "name": "Kryterium 3 — Zagniezdzone zapisy i filtry",
+      "name": "Zagniezdzone zapisy",
       "item": [
+        {
+          "name": "POST /incidents",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/incidents",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": \"Test Street 1\",\n  \"level\": \"medium\",\n  \"categoryIds\": [41, 42]\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /incidents/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/incidents/{{openIncidentId}}"
+          }
+        },
+        {
+          "name": "GET /incidents?categoryId=",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/incidents?categoryId={{categoryId}}"
+          }
+        },
+        {
+          "name": "GET /incidents?exclude=",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/incidents?exclude={{excludeCategoryId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transakcje",
+      "item": [
+        {
+          "name": "POST /incidents/:id/assign",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/incidents/{{openIncidentId}}/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"heroId\": {{heroId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /incidents/:id/resolve",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/incidents/{{assignedIncidentId}}/resolve",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "GET /heroes/:id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/heroes/{{heroId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "item": [
+        {
+          "name": "GET /stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stats"
+          }
+        }
+      ]
+    }
+  ]
+}
         {
           "name": "POST /incidents — nested create z categoryIds",
           "request": {
