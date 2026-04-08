@@ -4,34 +4,22 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl",          "value": "http://localhost:3000/api/v1" },
-    { "key": "heroId",           "value": "21", "description": "ID dowolnego bohatera (sprawdź GET /heroes)" },
-    { "key": "availableHeroId",  "value": "22", "description": "ID bohatera ze statusem available (do assign)" },
-    { "key": "openIncidentId",   "value": "62", "description": "ID incydentu ze statusem open (do assign)" },
-    { "key": "assignedIncidentId","value": "63", "description": "ID incydentu ze statusem assigned (do resolve)" }
+    { "key": "baseUrl",           "value": "http://localhost:3000/api/v1" },
+    { "key": "heroId",            "value": "21",  "description": "ID bohatera (sprawdź GET /heroes)" },
+    { "key": "availableHeroId",   "value": "22",  "description": "ID bohatera ze statusem available" },
+    { "key": "openIncidentId",    "value": "62",  "description": "ID incydentu ze statusem open" },
+    { "key": "assignedIncidentId","value": "63",  "description": "ID incydentu ze statusem assigned" }
   ],
   "item": [
     {
       "name": "Heroes",
       "item": [
         {
-          "name": "GET /heroes — lista",
+          "name": "GET /heroes",
           "request": { "method": "GET", "url": "{{baseUrl}}/heroes" }
         },
         {
-          "name": "GET /heroes?status=available",
-          "request": { "method": "GET", "url": "{{baseUrl}}/heroes?status=available" }
-        },
-        {
-          "name": "GET /heroes?power=flight",
-          "request": { "method": "GET", "url": "{{baseUrl}}/heroes?power=flight" }
-        },
-        {
-          "name": "GET /heroes?sortBy=missions_count&sortDir=desc&pageSize=5",
-          "request": { "method": "GET", "url": "{{baseUrl}}/heroes?sortBy=missions_count&sortDir=desc&pageSize=5" }
-        },
-        {
-          "name": "POST /heroes — utwórz bohatera",
+          "name": "POST /heroes",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -44,30 +32,12 @@
           "request": { "method": "GET", "url": "{{baseUrl}}/heroes/{{heroId}}" }
         },
         {
-          "name": "PATCH /heroes/:id — zmiana statusu",
+          "name": "PATCH /heroes/:id",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/heroes/{{heroId}}",
             "body": { "mode": "raw", "raw": "{\n  \"status\": \"retired\"\n}" }
-          }
-        },
-        {
-          "name": "PATCH /heroes/:id — zmiana nazwy i mocy",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/heroes/{{heroId}}",
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Nova Storm\",\n  \"power\": \"strength\"\n}" }
-          }
-        },
-        {
-          "name": "PATCH /heroes/:id — błędna wartość (422)",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/heroes/{{heroId}}",
-            "body": { "mode": "raw", "raw": "{\n  \"status\": \"unavailable\"\n}" }
           }
         },
         {
@@ -80,27 +50,11 @@
       "name": "Incidents",
       "item": [
         {
-          "name": "GET /incidents — lista",
+          "name": "GET /incidents",
           "request": { "method": "GET", "url": "{{baseUrl}}/incidents" }
         },
         {
-          "name": "GET /incidents?level=critical",
-          "request": { "method": "GET", "url": "{{baseUrl}}/incidents?level=critical" }
-        },
-        {
-          "name": "GET /incidents?status=open",
-          "request": { "method": "GET", "url": "{{baseUrl}}/incidents?status=open" }
-        },
-        {
-          "name": "GET /incidents?categoryId=1",
-          "request": { "method": "GET", "url": "{{baseUrl}}/incidents?categoryId=1" }
-        },
-        {
-          "name": "GET /incidents?exclude=2",
-          "request": { "method": "GET", "url": "{{baseUrl}}/incidents?exclude=2" }
-        },
-        {
-          "name": "POST /incidents — utwórz incydent",
+          "name": "POST /incidents",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -113,7 +67,7 @@
           "request": { "method": "GET", "url": "{{baseUrl}}/incidents/{{openIncidentId}}" }
         },
         {
-          "name": "POST /incidents/:id/assign — przypisz bohatera",
+          "name": "POST /incidents/:id/assign",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -122,7 +76,7 @@
           }
         },
         {
-          "name": "PATCH /incidents/:id/resolve — rozwiąż incydent",
+          "name": "PATCH /incidents/:id/resolve",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -136,7 +90,7 @@
       "name": "Stats",
       "item": [
         {
-          "name": "GET /stats — podsumowanie",
+          "name": "GET /stats",
           "request": { "method": "GET", "url": "{{baseUrl}}/stats" }
         }
       ]

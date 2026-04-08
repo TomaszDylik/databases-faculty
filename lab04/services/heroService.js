@@ -1,6 +1,7 @@
+const { Prisma }         = require('@prisma/client');
 const heroRepository     = require('../repositories/heroRepository');
 const incidentRepository = require('../repositories/incidentRepository');
-const { BadRequestError, ValidationError, NotFoundError } = require('./errors');
+const { BadRequestError, ValidationError, NotFoundError, ConflictError } = require('./errors');
 
 const VALID_POWERS          = ['flight', 'strength', 'telepathy', 'speed', 'invisibility'];
 const VALID_STATUSES        = ['available', 'busy', 'retired'];
@@ -39,8 +40,13 @@ async function createHero({ name, power }) {
   if (!name || !power) throw new BadRequestError('Fields "name" and "power" are required');
   if (!VALID_POWERS.includes(power))
     throw new ValidationError(`Power must be one of: ${VALID_POWERS.join(', ')}`);
-  // trim tu, bo Prisma nie ma beforeValidate
-  return heroRepository.create({ name: name.trim(), power });
+  try {
+    return await heroRepository.create({ name: name.trim(), power });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+      throw new ConflictError(`Hero with name "${name.trim()}" already exists`);
+    throw err;
+  }
 }
 
 async function updateHero(heroId, payload = {}) {
@@ -76,7 +82,13 @@ async function updateHero(heroId, payload = {}) {
   const existing = await heroRepository.findById(heroId);
   if (!existing) throw new NotFoundError(`Hero with id ${heroId} not found`);
 
-  return heroRepository.update(heroId, updates);
+  try {
+    return await heroRepository.update(heroId, updates);
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')
+      throw new ConflictError(`Hero with name "${updates.name}" already exists`);
+    throw err;
+  }
 }
 
 async function listHeroIncidents(heroId, { page, pageSize } = {}) {
