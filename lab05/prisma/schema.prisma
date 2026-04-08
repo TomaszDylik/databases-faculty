@@ -1,0 +1,94 @@
+// This is your Prisma schema file — the single source of truth for DB structure and types.
+// Any schema change + `prisma migrate dev` is the only right way to modify the database.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Power {
+  flight
+  strength
+  telepathy
+  speed
+  invisibility
+}
+
+enum HeroStatus {
+  available
+  busy
+  retired
+}
+
+enum IncidentLevel {
+  low
+  medium
+  critical
+}
+
+enum IncidentStatus {
+  open
+  assigned
+  resolved
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model Hero {
+  id            Int        @id @default(autoincrement())
+  name          String     @unique @db.VarChar(120)
+  power         Power
+  status        HeroStatus @default(available)
+  missionsCount Int        @default(0) @map("missions_count")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  incidents     Incident[]
+
+  @@map("heroes")
+}
+
+model Incident {
+  id                Int            @id @default(autoincrement())
+  location          String
+  district          String?
+  level             IncidentLevel
+  status            IncidentStatus @default(open)
+  heroId            Int?           @map("hero_id")
+  assignedAt        DateTime?      @map("assigned_at")
+  resolvedAt        DateTime?      @map("resolved_at")
+  resolutionMinutes Float?         @map("resolution_minutes")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  hero       Hero?              @relation(fields: [heroId], references: [id], onDelete: SetNull)
+  categories IncidentCategory[]
+
+  @@map("incidents")
+}
+
+model Category {
+  id         Int                @id @default(autoincrement())
+  name       String             @unique @db.VarChar(60)
+  incidents  IncidentCategory[]
+
+  @@map("categories")
+}
+
+// Jawna tabela pośrednia M:N — pełna kontrola nad onDelete i composite PK
+model IncidentCategory {
+  incidentId Int @map("incident_id")
+  categoryId Int @map("category_id")
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([incidentId, categoryId])
+  @@map("incident_categories")
+}
