@@ -1,15 +1,15 @@
-{
+﻿{
   "info": {
     "name": "Lab04",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl",           "value": "http://localhost:3000/api/v1" },
-    { "key": "heroId",            "value": "179" },
-    { "key": "openIncidentId",    "value": "518" },
-    { "key": "assignedIncidentId","value": "519" },
-    { "key": "categoryId",        "value": "41" },
-    { "key": "excludeCategoryId", "value": "42" }
+    { "key": "baseUrl",            "value": "http://localhost:3000/api/v1" },
+    { "key": "heroId",             "value": "220" },
+    { "key": "openIncidentId",     "value": "614" },
+    { "key": "assignedIncidentId", "value": "613" },
+    { "key": "categoryId",         "value": "51" },
+    { "key": "excludeCategoryId",  "value": "52" }
   ],
   "item": [
     {
@@ -23,7 +23,7 @@
             "url": "{{baseUrl}}/incidents",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"location\": \"Test Street 1\",\n  \"level\": \"medium\",\n  \"categoryIds\": [41, 42]\n}"
+              "raw": "{\n  \"location\": \"Test Street 1\",\n  \"level\": \"medium\",\n  \"categoryIds\": [51, 52]\n}"
             }
           }
         },
@@ -91,91 +91,6 @@
       "item": [
         {
           "name": "GET /stats",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/stats"
-          }
-        }
-      ]
-    }
-  ]
-}
-        {
-          "name": "POST /incidents — nested create z categoryIds",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"location\": \"Test Street 1\",\n  \"level\": \"medium\",\n  \"categoryIds\": [41, 42]\n}"
-            }
-          }
-        },
-        {
-          "name": "GET /incidents/:id — hero select + categories (bez N+1)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/incidents/{{openIncidentId}}"
-          }
-        },
-        {
-          "name": "GET /incidents?categoryId= — filtr some",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/incidents?categoryId={{categoryId}}"
-          }
-        },
-        {
-          "name": "GET /incidents?exclude= — filtr none",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/incidents?exclude={{excludeCategoryId}}"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Kryterium 4 — Transakcje i missionsCount",
-      "item": [
-        {
-          "name": "POST /incidents/:id/assign — transakcja assign",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents/{{openIncidentId}}/assign",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"heroId\": {{heroId}}\n}"
-            }
-          }
-        },
-        {
-          "name": "PATCH /incidents/:id/resolve — transakcja + increment missionsCount",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents/{{assignedIncidentId}}/resolve",
-            "body": {
-              "mode": "raw",
-              "raw": "{}"
-            }
-          }
-        },
-        {
-          "name": "GET /heroes/:id — sprawdz missionsCount po resolve",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/heroes/{{heroId}}"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Kryterium 5 — Surowe SQL",
-      "item": [
-        {
-          "name": "GET /stats — queryRaw tagged template",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/stats"
