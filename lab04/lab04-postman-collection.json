@@ -1,97 +1,100 @@
 {
   "info": {
-    "name": "Lab04 — Prisma ORM",
+    "name": "Lab04 — Prisma ORM (kryteria)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl",           "value": "http://localhost:3000/api/v1" },
-    { "key": "heroId",            "value": "157",  "description": "ID dowolnego bohatera" },
-    { "key": "availableHeroId",   "value": "157",  "description": "ID bohatera ze statusem available" },
-    { "key": "openIncidentId",    "value": "429",  "description": "ID incydentu ze statusem open (low)" },
-    { "key": "assignedIncidentId","value": "431",  "description": "ID incydentu ze statusem assigned (low)" }
+    { "key": "heroId",            "value": "179",  "description": "available hero (strength)" },
+    { "key": "openIncidentId",    "value": "518",  "description": "open incident (medium)" },
+    { "key": "assignedIncidentId","value": "519",  "description": "assigned incident (low)" },
+    { "key": "categoryId",        "value": "41",   "description": "flood" },
+    { "key": "excludeCategoryId", "value": "42",   "description": "fire" }
   ],
   "item": [
     {
-      "name": "Heroes",
+      "name": "Kryterium 3 — Zagniezdzone zapisy i filtry",
       "item": [
         {
-          "name": "GET /heroes",
-          "request": { "method": "GET", "url": "{{baseUrl}}/heroes" }
-        },
-        {
-          "name": "POST /heroes",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/heroes",
-            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test Hero\",\n  \"power\": \"flight\"\n}" }
-          }
-        },
-        {
-          "name": "GET /heroes/:id",
-          "request": { "method": "GET", "url": "{{baseUrl}}/heroes/{{heroId}}" }
-        },
-        {
-          "name": "PATCH /heroes/:id",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/heroes/{{heroId}}",
-            "body": { "mode": "raw", "raw": "{\n  \"status\": \"retired\"\n}" }
-          }
-        },
-        {
-          "name": "GET /heroes/:id/incidents",
-          "request": { "method": "GET", "url": "{{baseUrl}}/heroes/{{heroId}}/incidents" }
-        }
-      ]
-    },
-    {
-      "name": "Incidents",
-      "item": [
-        {
-          "name": "GET /incidents",
-          "request": { "method": "GET", "url": "{{baseUrl}}/incidents" }
-        },
-        {
-          "name": "POST /incidents",
+          "name": "POST /incidents — nested create z categoryIds",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/incidents",
-            "body": { "mode": "raw", "raw": "{\n  \"location\": \"Park Avenue\",\n  \"level\": \"medium\",\n  \"categoryIds\": [36, 37]\n}" }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"location\": \"Test Street 1\",\n  \"level\": \"medium\",\n  \"categoryIds\": [41, 42]\n}"
+            }
           }
         },
         {
-          "name": "GET /incidents/:id",
-          "request": { "method": "GET", "url": "{{baseUrl}}/incidents/{{openIncidentId}}" }
-        },
-        {
-          "name": "POST /incidents/:id/assign",
+          "name": "GET /incidents/:id — hero select + categories (bez N+1)",
           "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents/{{openIncidentId}}/assign",
-            "body": { "mode": "raw", "raw": "{\n  \"heroId\": {{availableHeroId}}\n}" }
+            "method": "GET",
+            "url": "{{baseUrl}}/incidents/{{openIncidentId}}"
           }
         },
         {
-          "name": "PATCH /incidents/:id/resolve",
+          "name": "GET /incidents?categoryId= — filtr some",
           "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents/{{assignedIncidentId}}/resolve",
-            "body": { "mode": "raw", "raw": "{}" }
+            "method": "GET",
+            "url": "{{baseUrl}}/incidents?categoryId={{categoryId}}"
+          }
+        },
+        {
+          "name": "GET /incidents?exclude= — filtr none",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/incidents?exclude={{excludeCategoryId}}"
           }
         }
       ]
     },
     {
-      "name": "Stats",
+      "name": "Kryterium 4 — Transakcje i missionsCount",
       "item": [
         {
-          "name": "GET /stats",
-          "request": { "method": "GET", "url": "{{baseUrl}}/stats" }
+          "name": "POST /incidents/:id/assign — transakcja assign",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/incidents/{{openIncidentId}}/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"heroId\": {{heroId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH /incidents/:id/resolve — transakcja + increment missionsCount",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/incidents/{{assignedIncidentId}}/resolve",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "GET /heroes/:id — sprawdz missionsCount po resolve",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/heroes/{{heroId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kryterium 5 — Surowe SQL",
+      "item": [
+        {
+          "name": "GET /stats — queryRaw tagged template",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stats"
+          }
         }
       ]
     }
