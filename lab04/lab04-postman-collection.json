@@ -5,10 +5,10 @@
   },
   "variable": [
     { "key": "baseUrl",           "value": "http://localhost:3000/api/v1" },
-    { "key": "heroId",            "value": "130",  "description": "ID bohatera (sprawdź GET /heroes)" },
-    { "key": "availableHeroId",   "value": "130",  "description": "ID bohatera ze statusem available" },
-    { "key": "openIncidentId",    "value": "308",  "description": "ID incydentu ze statusem open" },
-    { "key": "assignedIncidentId","value": "307",  "description": "ID incydentu ze statusem assigned" }
+    { "key": "heroId",            "value": "157",  "description": "ID dowolnego bohatera" },
+    { "key": "availableHeroId",   "value": "157",  "description": "ID bohatera ze statusem available" },
+    { "key": "openIncidentId",    "value": "429",  "description": "ID incydentu ze statusem open (low)" },
+    { "key": "assignedIncidentId","value": "431",  "description": "ID incydentu ze statusem assigned (low)" }
   ],
   "item": [
     {
@@ -59,7 +59,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/incidents",
-            "body": { "mode": "raw", "raw": "{\n  \"location\": \"Park Avenue\",\n  \"level\": \"medium\",\n  \"categoryIds\": [26, 27]\n}" }
+            "body": { "mode": "raw", "raw": "{\n  \"location\": \"Park Avenue\",\n  \"level\": \"medium\",\n  \"categoryIds\": [36, 37]\n}" }
           }
         },
         {
