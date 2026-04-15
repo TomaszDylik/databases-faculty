@@ -50,7 +50,7 @@ model Hero {
   missionsCount Int        @default(0) @map("missions_count")
   createdAt     DateTime   @default(now()) @map("created_at")
   updatedAt     DateTime   @updatedAt @map("updated_at")
-
+  status2       Int?       
   // virtual field — Prisma does NOT create a column, only enables include/select on the relation
   incidents     Incident[]
 

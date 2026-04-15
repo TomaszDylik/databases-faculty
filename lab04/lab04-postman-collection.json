@@ -1,102 +1,80 @@
 ﻿{
   "info": {
-    "name": "Lab04",
+    "name": "lab04",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl",            "value": "http://localhost:3000/api/v1" },
-    { "key": "heroId",             "value": "220" },
-    { "key": "openIncidentId",     "value": "614" },
-    { "key": "assignedIncidentId", "value": "613" },
-    { "key": "categoryId",         "value": "51" },
-    { "key": "excludeCategoryId",  "value": "52" }
+    { "key": "base", "value": "http://localhost:3000/api/v1" }
   ],
   "item": [
     {
-      "name": "Zagniezdzone zapisy",
-      "item": [
-        {
-          "name": "POST /incidents",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"location\": \"Test Street 1\",\n  \"level\": \"medium\",\n  \"categoryIds\": [51, 52]\n}"
-            }
-          }
-        },
-        {
-          "name": "GET /incidents/:id",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/incidents/{{openIncidentId}}"
-          }
-        },
-        {
-          "name": "GET /incidents?categoryId=",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/incidents?categoryId={{categoryId}}"
-          }
-        },
-        {
-          "name": "GET /incidents?exclude=",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/incidents?exclude={{excludeCategoryId}}"
-          }
+      "name": "POST /incidents",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base}}/incidents", "host": ["{{base}}"], "path": ["incidents"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"location\": \"Centrum\",\n  \"level\": \"critical\",\n  \"categoryIds\": [1, 2]\n}"
         }
-      ]
+      }
     },
     {
-      "name": "Transakcje",
-      "item": [
-        {
-          "name": "POST /incidents/:id/assign",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents/{{openIncidentId}}/assign",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"heroId\": {{heroId}}\n}"
-            }
-          }
-        },
-        {
-          "name": "PATCH /incidents/:id/resolve",
-          "request": {
-            "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/incidents/{{assignedIncidentId}}/resolve",
-            "body": {
-              "mode": "raw",
-              "raw": "{}"
-            }
-          }
-        },
-        {
-          "name": "GET /heroes/:id",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/heroes/{{heroId}}"
-          }
-        }
-      ]
+      "name": "GET /incidents/:id",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base}}/incidents/1", "host": ["{{base}}"], "path": ["incidents", "1"] }
+      }
     },
     {
-      "name": "Stats",
-      "item": [
-        {
-          "name": "GET /stats",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/stats"
-          }
+      "name": "GET /incidents?categoryId=1",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base}}/incidents?categoryId=1",
+          "host": ["{{base}}"],
+          "path": ["incidents"],
+          "query": [{ "key": "categoryId", "value": "1" }]
         }
-      ]
+      }
+    },
+    {
+      "name": "GET /incidents?exclude=1",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base}}/incidents?exclude=1",
+          "host": ["{{base}}"],
+          "path": ["incidents"],
+          "query": [{ "key": "exclude", "value": "1" }]
+        }
+      }
+    },
+    {
+      "name": "POST /incidents/:id/assign",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base}}/incidents/1/assign", "host": ["{{base}}"], "path": ["incidents", "1", "assign"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"heroId\": 1\n}"
+        }
+      }
+    },
+    {
+      "name": "PATCH /incidents/:id/resolve",
+      "request": {
+        "method": "PATCH",
+        "url": { "raw": "{{base}}/incidents/1/resolve", "host": ["{{base}}"], "path": ["incidents", "1", "resolve"] }
+      }
+    },
+    {
+      "name": "GET /stats",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base}}/stats", "host": ["{{base}}"], "path": ["stats"] }
+      }
     }
   ]
 }
